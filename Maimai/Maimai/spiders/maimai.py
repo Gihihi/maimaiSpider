@@ -51,4 +51,16 @@ class MaimaiSpider(scrapy.Spider):
 			yield scrapy.Request( person_url, cookies=self.cookies, callback=self.get_info)
 
 	def get_info(self, response):
-		pass
+		'''
+			解析员工个人信息
+		'''
+		content = response.body
+
+		pattern_staff_info = re.compile('JSON.parse\("(.*?)\);')
+		staff_info = pattern_staff_info.findall(content)[0].replace('\u0022', '"').replace('\u002D', '-')
+		
+		pattern_card = re.compile('"card":\{(.*?)\}')
+		card = json.loads('{' + pattern_card.findall(staff_info)[0] + '}')
+		print '========================================='
+		print card['name']
+		print '========================================='
