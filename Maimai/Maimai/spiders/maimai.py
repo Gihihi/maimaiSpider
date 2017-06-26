@@ -5,7 +5,7 @@ import json
 
 KEY_WORDS = {
 		'10695' : '小米', 
-		#'10939' : '新浪',
+		'10939' : '新浪',
 	}
 
 class MaimaiSpider(scrapy.Spider):
@@ -13,9 +13,13 @@ class MaimaiSpider(scrapy.Spider):
 	allowed_domains = ['maimai.cn']
 	start_urls = ['http://maimai.cn/']
 
-	cid_url = 'https://maimai.cn/company/contacts?cid='
-	company_url = '&company='
-	end_url = '&forcomp=1&highlight=false&title=所有员工'
+	#每次获取员工数量
+	count = '200'
+
+	head_url = 'https://maimai.cn/company/contacts?count='
+	page_url = '&page='
+	cid_url = '&cid='
+	json_url = '&jsononly=1'
 
 	cookies = {
 		'token' : '"nW56bx8KqRtobT9ZpyKoW7LSl23Lelwu2j/yC3Uxmp7E8chkqpLBOKIMDf+fnU578CKuzcDfAvoCmBm7+jVysA=="',
@@ -24,11 +28,17 @@ class MaimaiSpider(scrapy.Spider):
 
 	def start_requests(self):
 		'''
-			查询公司所有员工
+			查询公司员工
 		'''
-		for item in KEY_WORDS.items():
-			url = self.cid_url + item[0] + self.company_url + item[1] + self.end_url
-			yield scrapy.Request(url, cookies=self.cookies, callback=self.parse)
+		for cid in KEY_WORDS.keys():
+			i = 0
+			while True:
+				url = self.head_url + self.count + self.page_url + str(i) + self.cid_url + cid + self.json_url
+				i += 1
+				print url
+				if i == 10:
+					break
+				yield scrapy.Request(url, cookies=self.cookies, callback=self.parse)
 
 	def parse(self, response):
 		'''
