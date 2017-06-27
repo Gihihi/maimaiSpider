@@ -5,6 +5,10 @@ import json
 import time
 from Maimai.items import MaimaiItem
 
+NONE_STR = lambda x : '' if x == None else x
+
+WORK_END_DATE = lambda x : '至今' if x == None else x
+
 KEY_WORDS = {
 		'10695' : '小米', 
 	#	'10939' : '新浪',
@@ -15,10 +19,16 @@ SEX_DICT = {
 		'她' : '女',
 	}
 
+DEGREE_DICT = {
+		1 : '本科',
+		2 : '研究生',
+		3 : '博士',
+	}
+
 class MaimaiSpider(scrapy.Spider):
 	name = 'maimai'
-	allowed_domains = ['maimai.cn']
-	start_urls = ['http://maimai.cn/']
+	allowed_domains = ['maimai.cn',]
+	start_urls = ['http://maimai.cn/',]
 
 	#每次获取员工数量
 	count = '10'
@@ -89,10 +99,36 @@ class MaimaiSpider(scrapy.Spider):
 		item['name'] = card['name']
 		item['img'] = card['avatar_large']
 		item['description'] = card['company'] + card['position']
-
+		item['work_city'] = card['province'] + '-' +  card['city']
+		if sex in SEX_DICT.keys():
+			item['sex'] = SEX_DICT[sex]
+		if 'ht_city' in uinfo.keys() and 'ht_province' in uinfo.keys():
+			item['birth_city'] = NONE_STR(uinfo['ht_province']) + '-' + NONE_STR(uinfo['ht_city'])
+		if 'xingzuo' in uinfo.keys():
+			item['xingzuo'] = uinfo['xingzuo']
+		tag_list = ''
+		for tag in uinfo['weibo_tags']:
+			tag_list += tag + ','
+		item['skill'] = tag_list[:-1]
+		
 		#工作经历
+		i = 1
+		for work_exp in uinfo['work_exp']:
+			item['company' + str(i)] = work_exp['company']
+			item['position' + str(i)] = work_exp['position']
+			item['description' + str(i)] = work_exp['description']
+			item['start_date' + str(i)] = work_exp['start_date']
+			item['end_date' + str(i)] = WORK_END_DATE(work_exp['end_date'])
+			i +=1
 		
 		#教育经历
-
+		j = 1
+		for edu_exp in uinfo['education']:
+			item['school' + str(j)] = edu_exp['school']
+			item['degree' + str(j)] = DEGREE_DICT[edu_exp['degree']]
+			item['department' + str(j)] = edu_exp['department']
+			item['s_start_date' + str(j)] = edu_exp['start_date']
+			item['s_end_date' + str(j)] = edu_exp['start_date']
+			j += 1
 		yield item
 
