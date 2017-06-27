@@ -2,10 +2,11 @@
 import scrapy
 import re
 import json
+import time
 
 KEY_WORDS = {
 		'10695' : '小米', 
-		'10939' : '新浪',
+	#	'10939' : '新浪',
 	}
 
 class MaimaiSpider(scrapy.Spider):
@@ -14,7 +15,11 @@ class MaimaiSpider(scrapy.Spider):
 	start_urls = ['http://maimai.cn/']
 
 	#每次获取员工数量
-	count = '200'
+	count = '10'
+	#获取页数
+	page = 2
+	#请求延迟秒数
+	sleep_time = 5
 
 	head_url = 'https://maimai.cn/company/contacts?count='
 	page_url = '&page='
@@ -34,11 +39,11 @@ class MaimaiSpider(scrapy.Spider):
 			i = 0
 			while True:
 				url = self.head_url + self.count + self.page_url + str(i) + self.cid_url + cid + self.json_url
-				i += 1
-				print url
-				if i == 10:
-					break
+				time.sleep(self.sleep_time)
 				yield scrapy.Request(url, cookies=self.cookies, callback=self.parse)
+				i += 1
+				if i == self.page:
+					break
 
 	def parse(self, response):
 		'''
@@ -46,19 +51,12 @@ class MaimaiSpider(scrapy.Spider):
 		'''
 		start_url = 'https://maimai.cn/contact/detail/'
 		end_url = '?from=webview%23%2Fcompany%2Fcontacts'
-		
-		#替换\u0022(")和\u002D(-)
-		content = response.body.decode('raw_unicode_escape')
-		#筛选公司员工信息
-		pattern_staff_info = re.compile('"contacts":\[(.*?)\]')
-		staff_info = pattern_staff_info.findall(content)[0]
-		#获取员工url
-		pattern_staff_url = re.compile('"encode_mmid":"(.*?)"')
-		staff_urls = pattern_staff_url.findall(staff_info)
-
-		for url in staff_urls:
-			person_url = start_url + url + end_url
-			yield scrapy.Request( person_url, cookies=self.cookies, callback=self.get_info)
+		content = json.loads(response.body)
+		contacts = content['data']['contacts']
+		for contact in contacts:
+			person_url = start_url + contact['contact']['encode_mmid'] + end_url
+			time.sleep(self.sleep_time)
+			yield scrapy.Request(person_url, cookies=self.cookies, callback=self.get_info)
 
 	def get_info(self, response):
 		'''
@@ -68,9 +66,12 @@ class MaimaiSpider(scrapy.Spider):
 
 		pattern_staff_info = re.compile('JSON.parse\("(.*?)\);')
 		staff_info = pattern_staff_info.findall(content)[0].replace('\u0022', '"').replace('\u002D', '-')
-		
+
 		pattern_card = re.compile('"card":\{(.*?)\}')
 		card = json.loads('{' + pattern_card.findall(staff_info)[0] + '}')
-		print '========================================='
-		print card['name']
-		print '========================================='
+
+		pattern_uinfo = re.compile('"uinfo":\{(.*?)\},"addrcnt"')
+		uinfo = json.loads('{' + pattern_uinfo.findall(staff_info)[0] + '}')
+
+		print type(card)
+		print type(uinfo)
