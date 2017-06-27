@@ -31,9 +31,9 @@ class MaimaiSpider(scrapy.Spider):
 	start_urls = ['http://maimai.cn/',]
 
 	#每次获取员工数量
-	count = '10'
+	count = '20'
 	#获取页数
-	page = 2
+	page = 1
 	#请求延迟秒数
 	sleep_time = 5
 
