@@ -3,10 +3,16 @@ import scrapy
 import re
 import json
 import time
+from Maimai.items import MaimaiItem
 
 KEY_WORDS = {
 		'10695' : '小米', 
 	#	'10939' : '新浪',
+	}
+
+SEX_DICT = {
+		'他' : '男',
+		'她' : '女',
 	}
 
 class MaimaiSpider(scrapy.Spider):
@@ -62,6 +68,8 @@ class MaimaiSpider(scrapy.Spider):
 		'''
 			解析员工个人信息
 		'''
+		item = MaimaiItem()
+
 		content = response.body
 
 		pattern_staff_info = re.compile('JSON.parse\("(.*?)\);')
@@ -73,5 +81,18 @@ class MaimaiSpider(scrapy.Spider):
 		pattern_uinfo = re.compile('"uinfo":\{(.*?)\},"addrcnt"')
 		uinfo = json.loads('{' + pattern_uinfo.findall(staff_info)[0] + '}')
 
-		print type(card)
-		print type(uinfo)
+		pattern_sex = re.compile('"ta":"(.*?)"')
+		sex = pattern_sex.findall(staff_info)[0]
+		
+		#基本信息
+		item['id'] = str(card['id'])
+		item['name'] = card['name']
+		item['img'] = card['avatar_large']
+		item['description'] = card['company'] + card['position']
+
+		#工作经历
+		
+		#教育经历
+
+		yield item
+
