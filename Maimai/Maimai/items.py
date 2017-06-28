@@ -8,9 +8,11 @@
 import scrapy
 
 
-class MaimaiItem(scrapy.Item):
+class BaseItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+	
+	#基本信息
 	id = scrapy.Field()
 	name = scrapy.Field()
 	img = scrapy.Field()
@@ -20,47 +22,29 @@ class MaimaiItem(scrapy.Item):
 	xingzuo = scrapy.Field()
 	birthday = scrapy.Field()
 	birth_city = scrapy.Field()
-	skill = scrapy.Field()
-	company1 = scrapy.Field()
-	position1 = scrapy.Field()
-	description1 = scrapy.Field()
-	start_date1 = scrapy.Field()
-	end_date1 = scrapy.Field()
-	company2 = scrapy.Field()
-	position2 = scrapy.Field()
-	description2 = scrapy.Field()
-	start_date2 = scrapy.Field()
-	end_date2 = scrapy.Field()
-	company3 = scrapy.Field()
-	position3 = scrapy.Field()
-	description3 = scrapy.Field()
-	start_date3 = scrapy.Field()
-	end_date3 = scrapy.Field()
-	company4 = scrapy.Field()
-	position4 = scrapy.Field()
-	description4 = scrapy.Field()
-	start_date4 = scrapy.Field()
-	end_date4 = scrapy.Field()
-	company5 = scrapy.Field()
-	position5 = scrapy.Field()
-	description5 = scrapy.Field()
-	start_date5 = scrapy.Field()
-	end_date5 = scrapy.Field()
-	school1 = scrapy.Field()
-	degree1 = scrapy.Field()
-	department1 = scrapy.Field()
-	#major1 = scrapy.Field()
-	s_start_date1 = scrapy.Field()
-	s_end_date1 = scrapy.Field()
-	school2 = scrapy.Field()
-	degree2 = scrapy.Field()
-	department2 = scrapy.Field()
-	#major2 = scrapy.Field()
-	s_start_date2 = scrapy.Field()
-	s_end_date2 = scrapy.Field()
-	school3 = scrapy.Field()
-	degree3 = scrapy.Field()
-	department3 = scrapy.Field()
-	#major3 = scrapy.Field()
-	s_start_date3 = scrapy.Field()
-	s_end_date3 = scrapy.Field()
+	
+class TagItem(scrapy.Item):
+	
+	#标签
+	id = scrapy.Field()
+	tag = scrapy.Field()
+	
+class WorkItem(scrapy.Item):
+	
+	#工作经历
+	id = scrapy.Field()
+	company = scrapy.Field()
+	position = scrapy.Field()
+	description = scrapy.Field()
+	start_date = scrapy.Field()
+	end_date = scrapy.Field()
+	
+class EduItem(scrapy.Item):
+	
+	#教育经历
+	id = scrapy.Field()
+	school = scrapy.Field()
+	degree = scrapy.Field()
+	department = scrapy.Field()
+	start_date = scrapy.Field()
+	end_date = scrapy.Field()

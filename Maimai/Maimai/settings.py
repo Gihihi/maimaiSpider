@@ -64,9 +64,10 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'Maimai.pipelines.MaimaiPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    #'Maimai.pipelines.MaimaiPipeline': 300,
+	'Maimai.mysqlpipelines.pipelines.MaimaiPipeline' : 1,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -88,3 +89,9 @@ ROBOTSTXT_OBEY = False
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+MYSQL_HOSTS = '127.0.0.1'
+MYSQL_USER = 'maimai'
+MYSQL_PASSWORD = 'maimai'
+MYSQL_PORT = '3306'
+MYSQL_DB = 'maimai'
