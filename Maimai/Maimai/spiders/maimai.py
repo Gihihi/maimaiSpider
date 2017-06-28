@@ -31,11 +31,11 @@ class MaimaiSpider(scrapy.Spider):
 	start_urls = ['http://maimai.cn/',]
 
 	#每次获取员工数量
-	count = '5'
+	count = '20'
 	#获取页数
 	page = 1
 	#请求延迟秒数
-	sleep_time = 0
+	sleep_time = 5
 
 	head_url = 'https://maimai.cn/company/contacts?count='
 	page_url = '&page='
@@ -95,20 +95,38 @@ class MaimaiSpider(scrapy.Spider):
 		sex = pattern_sex.findall(staff_info)[0]
 		
 		#基本信息
+		#id
 		item['id'] = str(card['id'])
+		#姓名
 		item['name'] = card['name']
+		#头像链接
 		item['img'] = card['avatar_large']
+		#公司+职位
 		item['description'] = card['company'] + card['position']
+		#工作地
 		item['work_city'] = card['province'] + '-' +  card['city']
+		#性别
 		if sex in SEX_DICT.keys():
 			item['sex'] = SEX_DICT[sex]
+		else:
+			item['sex'] = '不详'
+		#家乡
 		if 'ht_city' in uinfo.keys() and 'ht_province' in uinfo.keys():
 			item['birth_city'] = NONE_STR(uinfo['ht_province']) + '-' + NONE_STR(uinfo['ht_city'])
-		#if 'xingzuo' in uinfo.keys():
-		#	item['xingzuo'] = uinfo['xingzuo']
-		#item['birthday'] = uinfo['birthday']
-		item['xingzuo'] = 'xingzuo'
-		item['birthday'] = 'birthday'
+			if item['birth_city'] == '-':
+				item['birth_city'] = ''
+		else:
+			item['birth_city'] = ''
+		#星座
+		if 'xingzuo' in uinfo.keys():
+			item['xingzuo'] = uinfo['xingzuo']
+		else:
+			item['xingzuo'] = ''
+		#生日
+		if 'birthday' in uinfo.keys():
+			item['birthday'] = NONE_STR(uinfo['birthday'])
+		else:
+			item['birthday'] = ''
 
 
 		#标签
