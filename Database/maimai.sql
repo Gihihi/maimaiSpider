@@ -28,7 +28,8 @@ CREATE TABLE `baseitem` (
   `description` varchar(500) DEFAULT NULL,
   `work_city` varchar(30) DEFAULT NULL,
   `birth_city` varchar(30) DEFAULT NULL,
-  `xingzuo` varchar(30) DEFAULT NULL
+  `xingzuo` varchar(30) DEFAULT NULL,
+  `tag` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -42,15 +43,6 @@ CREATE TABLE `eduitem` (
   `department` varchar(500) DEFAULT NULL,
   `start_date` varchar(20) DEFAULT NULL,
   `end_date` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for tagitem
--- ----------------------------
-DROP TABLE IF EXISTS `tagitem`;
-CREATE TABLE `tagitem` (
-  `id` varchar(30) DEFAULT NULL,
-  `tag` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------

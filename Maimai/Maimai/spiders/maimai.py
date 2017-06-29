@@ -4,6 +4,8 @@ import re
 import json
 import time
 from Maimai.items import BaseItem
+from Maimai.items import WorkItem
+from Maimai.items import EduItem
 
 NONE_STR = lambda x : '' if x == None else x
 
@@ -31,11 +33,11 @@ class MaimaiSpider(scrapy.Spider):
 	start_urls = ['http://maimai.cn/',]
 
 	#每次获取员工数量
-	count = '20'
+	count = '5'
 	#获取页数
 	page = 1
 	#请求延迟秒数
-	sleep_time = 5
+	sleep_time = 0
 
 	head_url = 'https://maimai.cn/company/contacts?count='
 	page_url = '&page='
@@ -78,7 +80,6 @@ class MaimaiSpider(scrapy.Spider):
 		'''
 			解析员工个人信息
 		'''
-		item = BaseItem()
 
 		content = response.body
 
@@ -94,9 +95,13 @@ class MaimaiSpider(scrapy.Spider):
 		pattern_sex = re.compile('"ta":"(.*?)"')
 		sex = pattern_sex.findall(staff_info)[0]
 		
+		#个人ID
+		id = str(card['id'])
+
 		#基本信息
+		item = BaseItem()
 		#id
-		item['id'] = str(card['id'])
+		item['id'] = id
 		#姓名
 		item['name'] = card['name']
 		#头像链接
@@ -127,32 +132,35 @@ class MaimaiSpider(scrapy.Spider):
 			item['birthday'] = NONE_STR(uinfo['birthday'])
 		else:
 			item['birthday'] = ''
-
-
 		#标签
-		#tag_list = ''
-		#for tag in uinfo['weibo_tags']:
-		#	tag_list += tag + ','
-		#item['skill'] = tag_list[:-1]
+		tag_list = ''
+		for tag in uinfo['weibo_tags']:
+			tag_list += tag + ','
+		item['tag'] = tag_list[:-1]
+		yield item	
 		
 		#工作经历
-		#i = 1
-		#for work_exp in uinfo['work_exp']:
-		#	item['company' + str(i)] = work_exp['company']
-		#	item['position' + str(i)] = work_exp['position']
-		#	item['description' + str(i)] = work_exp['description']
-		#	item['start_date' + str(i)] = work_exp['start_date']
-		#	item['end_date' + str(i)] = WORK_END_DATE(work_exp['end_date'])
-		#	i +=1
-		
+		for work_exp in uinfo['work_exp']:
+			item = WorkItem()
+			item['id'] = id
+			item['company'] = work_exp['company']
+			item['position'] = work_exp['position']
+			if 'descroption' in work_exp.keys():
+				item['description'] = work_exp['description']
+			else:
+				item['description'] = ''
+			item['start_date'] = work_exp['start_date']
+			item['end_date'] = WORK_END_DATE(work_exp['end_date'])
+			yield item
+
 		#教育经历
-		#j = 1
-		#for edu_exp in uinfo['education']:
-		#	item['school' + str(j)] = edu_exp['school']
-		#	item['degree' + str(j)] = DEGREE_DICT[edu_exp['degree']]
-		#	item['department' + str(j)] = edu_exp['department']
-		#	item['s_start_date' + str(j)] = edu_exp['start_date']
-		#	item['s_end_date' + str(j)] = edu_exp['start_date']
-		#	j += 1
-		yield item
+		for edu_exp in uinfo['education']:
+			item = EduItem()
+			item['id'] = id
+			item['school'] = edu_exp['school']
+			item['degree'] = DEGREE_DICT[edu_exp['degree']]
+			item['department'] = edu_exp['department']
+			item['start_date'] = edu_exp['start_date']
+			item['end_date'] = edu_exp['start_date']
+			yield item
 

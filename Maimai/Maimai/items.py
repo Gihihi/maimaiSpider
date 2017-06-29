@@ -22,12 +22,7 @@ class BaseItem(scrapy.Item):
 	xingzuo = scrapy.Field()
 	birthday = scrapy.Field()
 	birth_city = scrapy.Field()
-	
-class TagItem(scrapy.Item):
-	
-	#标签
-	id = scrapy.Field()
-	tag = scrapy.Field()
+	tag = scrapy.Field()	
 	
 class WorkItem(scrapy.Item):
 	
