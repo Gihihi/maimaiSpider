@@ -56,6 +56,8 @@ DOWNLOADER_MIDDLEWARES = {
     #'Maimai.middlewares.MyCustomDownloaderMiddleware': 543,
 	'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware' : 123,
 	'Maimai.middlewares.UAPOOLS' : 124,
+	'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware' : 125,
+	'Maimai.middlewares.IPPOOLS' : 126,
 }
 
 # Enable or disable extensions
