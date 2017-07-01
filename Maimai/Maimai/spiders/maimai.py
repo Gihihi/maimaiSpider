@@ -13,7 +13,7 @@ WORK_END_DATE = lambda x : '至今' if x == None else x
 
 KEY_WORDS = {
 		'10695' : '小米', 
-	#	'10939' : '新浪',
+		#'10939' : '新浪',
 	}
 
 SEX_DICT = {
@@ -22,9 +22,12 @@ SEX_DICT = {
 	}
 
 DEGREE_DICT = {
+		0 : '专科',
 		1 : '本科',
 		2 : '硕士',
 		3 : '博士',
+		4 : '博士后',
+		255 : '其他',
 	}
 
 class MaimaiSpider(scrapy.Spider):
@@ -158,7 +161,10 @@ class MaimaiSpider(scrapy.Spider):
 			item = EduItem()
 			item['id'] = id
 			item['school'] = edu_exp['school']
-			item['degree'] = DEGREE_DICT[edu_exp['degree']]
+			if 'degree' in edu_exp.keys():
+				item['degree'] = DEGREE_DICT[edu_exp['degree']]
+			else:
+				item['degree'] = '' 
 			item['department'] = edu_exp['department']
 			item['start_date'] = edu_exp['start_date']
 			item['end_date'] = edu_exp['start_date']
