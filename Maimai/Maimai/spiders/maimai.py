@@ -14,25 +14,23 @@ NONE_STR = lambda x : '' if x == None else x
 WORK_END_DATE = lambda x : '至今' if x == None else x
 
 KEY_WORDS = {
-		'2221' : '陌陌', 
+		'2221' : '陌陌',
 		'11070' : '豆瓣',
 		'1' : '脉脉',
 		'8877' : '人人网',
 		'10020' : '去哪儿',
-		"""
-		'' : '友盟',
-		'' : '优酷',
-		'' : '爱奇艺',
-		'' : '搜狐',
-		'' : '今日头条',
-		'' : '微软',
-		'' : '滴滴',
-		'' : '雅虎',
-		'' : '亚马逊',
-		'' : 'boss直聘',
-		'' : '领英',
-		'' : '谷歌',
-		"""
+		#'27394' : '友盟',
+		#'10041' : '优酷',
+		#'8220' : '爱奇艺',
+		#'10989' : '搜狐',
+		#'10993' : '今日头条',
+		#'8538' : '微软',
+		#'9859' : '滴滴',
+		#'12207' : '雅虎',
+		#'10860' : '亚马逊',
+		#'24030' : 'boss直聘',
+		#'11973' : '领英',
+		#'16017' : '谷歌',
 	}
 
 SEX_DICT = {
@@ -58,7 +56,7 @@ class MaimaiSpider(scrapy.Spider):
 	#每次获取员工数量
 	count = '20'
 	#获取页数
-	page = 5
+	page = 1
 	#请求延迟秒数
 	sleep_time = 1
 
@@ -129,80 +127,86 @@ class MaimaiSpider(scrapy.Spider):
 		'''
 		
 		content = response.body
-		#print content
-		pattern_staff_info = re.compile('JSON.parse\("(.*?)\);')
-		staff_info = pattern_staff_info.findall(content)[0].replace('\u0022', '"').replace('\u002D', '-')
+		try:
+			pattern_staff_info = re.compile('JSON.parse\("(.*?)\);')
+			staff_info = pattern_staff_info.findall(content)[0].replace('\u0022', '"').replace('\u002D', '-')
+			pattern_card = re.compile('"card":\{(.*?)\}')
+			card = json.loads('{' + pattern_card.findall(staff_info)[0] + '}')
 
-		pattern_card = re.compile('"card":\{(.*?)\}')
-		card = json.loads('{' + pattern_card.findall(staff_info)[0] + '}')
+			pattern_uinfo = re.compile('"uinfo":\{(.*?)\},"addrcnt"')
+			uinfo = json.loads('{' + pattern_uinfo.findall(staff_info)[0] + '}')
 
-		pattern_uinfo = re.compile('"uinfo":\{(.*?)\},"addrcnt"')
-		uinfo = json.loads('{' + pattern_uinfo.findall(staff_info)[0] + '}')
+			pattern_sex = re.compile('"ta":"(.*?)"')
+			sex = pattern_sex.findall(staff_info)[0]
 
-		pattern_sex = re.compile('"ta":"(.*?)"')
-		sex = pattern_sex.findall(staff_info)[0]
-		
-		#个人ID
-		id = str(card['id'])
+			#个人ID
+			id = str(card['id'])
 
-		#基本信息
-		item = BaseItem()
-		#id
-		item['id'] = id
-		#url
-		item['url'] = response.url
-		#姓名
-		item['name'] = card['name']
-		#头像链接
-		item['img'] = card['avatar_large']
-		#公司
-		item['company'] = card['company']
-		#职位
-		item['position'] = card['position']
-		#工作地
-		item['work_city'] = card['province'] + '-' +  card['city']
-		#性别
-		item['sex'] = SEX_DICT.get(sex, '不详')
-		#家乡
-		item['birth_city'] = NONE_STR(uinfo.get('ht_province', '')) + '-' + NONE_STR(uinfo.get('ht_city', ''))
-		if item['birth_city'] == '-':
-			item['birth_city'] = ''
-		#星座
-		item['xingzuo'] = uinfo.get('xingzuo', '')
-		#生日
-		item['birthday'] = NONE_STR(uinfo.get('birthday', ''))
-		#标签
-		tag_list = ''
-		for tag in uinfo['weibo_tags']:
-			tag_list += tag + ','
-		item['tag'] = tag_list[:-1]
-		yield item	
-		
-		#工作经历
-		for work_exp in uinfo['work_exp']:
-			item = WorkItem()
+			#基本信息
+			item = BaseItem()
+			#id
 			item['id'] = id
-			item['company'] = work_exp['company']
-			item['position'] = work_exp['position']
-			item['description'] = work_exp.get('description', '')
-			item['start_date'] = work_exp['start_date']
-			item['end_date'] = WORK_END_DATE(work_exp['end_date'])
-			yield item
+			#url
+			item['url'] = response.url
+			#姓名
+			item['name'] = card['name']
+			#头像链接
+			item['img'] = card['avatar_large']
+			#公司
+			item['company'] = card['company']
+			#职位
+			item['position'] = card['position']
+			#工作地
+			item['work_city'] = card['province'] + '-' +  card['city']
+			#性别
+			item['sex'] = SEX_DICT.get(sex, '不详')
+			#家乡
+			item['birth_city'] = NONE_STR(uinfo.get('ht_province', '')) + '-' + NONE_STR(uinfo.get('ht_city', ''))
+			if item['birth_city'] == '-':
+				item['birth_city'] = ''
+			#星座
+			item['xingzuo'] = uinfo.get('xingzuo', '')
+			#生日
+			item['birthday'] = NONE_STR(uinfo.get('birthday', ''))
+			#标签
+			tag_list = ''
+			for tag in uinfo['weibo_tags']:
+				tag_list += tag + ','
+			item['tag'] = tag_list[:-1]
+			yield item	
+	
+			#工作经历
+			for work_exp in uinfo['work_exp']:
+				item = WorkItem()
+				item['id'] = id
+				item['company'] = work_exp['company']
+				item['position'] = work_exp['position']
+				item['description'] = work_exp.get('description', '')
+				item['start_date'] = work_exp['start_date']
+				item['end_date'] = WORK_END_DATE(work_exp['end_date'])
+				yield item
 
-		#教育经历
-		for edu_exp in uinfo['education']:
-			item = EduItem()
-			item['id'] = id
-			item['school'] = edu_exp['school']
-			item['degree'] = DEGREE_DICT[edu_exp.get('degree', '255')]
-			item['department'] = edu_exp['department']
-			item['start_date'] = edu_exp['start_date']
-			item['end_date'] = edu_exp.get('end_date', '')
-			yield item
+			#教育经历
+			for edu_exp in uinfo['education']:
+				item = EduItem()
+				item['id'] = id
+				item['school'] = edu_exp['school']
+				item['degree'] = DEGREE_DICT[edu_exp.get('degree', '255')]
+				item['department'] = edu_exp['department']
+				item['start_date'] = edu_exp['start_date']
+				item['end_date'] = edu_exp.get('end_date', '')
+				yield item
+		except Exception, e:
+			print content
+			print e
 
 	def get_comment(self, response):
-		content = json.loads(response.body)
-		comment_list = content['data']['evaluation_list']
+		try:
+			content = json.loads(response.body)
+			comment_list = content['data']['evaluation_list']
+		except Exception, e:
+			print response.body
+			print e
 
 		for comment in comment_list:
 			item = CommentItem()
