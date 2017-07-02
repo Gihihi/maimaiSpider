@@ -5,6 +5,7 @@ from twisted.internet.threads import deferToThread
 from Maimai.items import BaseItem
 from Maimai.items import WorkItem
 from Maimai.items import EduItem
+from Maimai.items import CommentItem
 
 class MaimaiPipeline(object):
 	
@@ -15,12 +16,14 @@ class MaimaiPipeline(object):
 			sex = item['sex']
 			birthday = item['birthday']
 			img = item['img']
-			description = item['description']
+			company = item['company']
+			position = item['position']
 			work_city = item['work_city']
 			birth_city = item['birth_city']
 			xingzuo = item['xingzuo']
 			tag = item['tag']
-			Sql.insert_baseitem(id, name, sex, birthday, img, description, work_city, birth_city, xingzuo, tag)
+			url = item['url']
+			Sql.insert_baseitem(id, name, sex, birthday, img, company, position, work_city, birth_city, xingzuo, tag, url)
 		
 		if isinstance(item, WorkItem):
 			id = item['id']
@@ -39,4 +42,13 @@ class MaimaiPipeline(object):
 			start_date = item['start_date']
 			end_date = item['end_date']
 			Sql.insert_eduitem(id, school, degree, department, start_date, end_date)
+		
+		if isinstance(item, CommentItem):
 			id = item['id']
+			friend_id = item['friend_id']
+			friend_name = item['friend_name']
+			friend_company = item['friend_company']
+			friend_position = item['friend_position']
+			level = item['level']
+			comment = item['comment']
+			Sql.insert_eduitem(id, friend_id, friend_name, friend_company, friend_position, level, comment)

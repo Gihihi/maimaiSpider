@@ -14,19 +14,21 @@ cur = cnx.cursor()
 class Sql:
 	
 	@classmethod
-	def insert_baseitem(self, id, name, sex, birthday, img, description, work_city, birth_city, xingzuo, tag):
-		sql = 'INSERT INTO baseitem (ID, NAME, SEX, BIRTHDAY, IMG, DESCRIPTION, WORK_CITY, BIRTH_CITY, XINGZUO, TAG) VALUES (%(id)s, %(name)s, %(sex)s, %(birthday)s, %(img)s, %(description)s, %(work_city)s, %(birth_city)s, %(xingzuo)s, %(tag)s)'
+	def insert_baseitem(self, id, name, sex, birthday, img, company, position, work_city, birth_city, xingzuo, tag, url):
+		sql = 'INSERT INTO baseitem (ID, NAME, SEX, BIRTHDAY, IMG, COMPANY, POSITION, WORK_CITY, BIRTH_CITY, XINGZUO, TAG, URL) VALUES (%(id)s, %(name)s, %(sex)s, %(birthday)s, %(img)s, %(company)s, %(position)s, %(work_city)s, %(birth_city)s, %(xingzuo)s, %(tag)s, %(url)s)'
 		value = {
 			'id' : id,
 			'name' : name,
 			'sex' : sex,
 			'birthday' : birthday,
 			'img' : img,
-			'description' : description,
+			'company' : company,
+			'position' : position,
 			'work_city' : work_city,
 			'birth_city' : birth_city,
 			'xingzuo' : xingzuo,
 			'tag' : tag,
+			'url' : url,
 			}
 		cur.execute(sql, value)
 		cnx.commit()
@@ -55,6 +57,21 @@ class Sql:
 			'department' : department,
 			'start_date' : start_date,
 			'end_date' : end_date,
+			}
+		cur.execute(sql, value)
+		cnx.commit()
+
+	@classmethod
+	def insert_commentitem(self, id, friend_id, friend_name, friend_company, friend_position, level, comment):
+		sql = 'INSERT INTO commentitem (ID, FRIEND_ID, FRIEND_NAME, FRIEND_COMPANY, FIREND_POSITION, LEVEL, COMMENT) VALUES (%(id)s, %(friend_id)s, %(friend_name)s, %(friend_company)s, %(firend_position)s, %(level)s, %(comment)s)'
+		value = {
+			'id' : id,
+			'friend_id' : friend_id,
+			'friend_name' : friend_name,
+			'friend_company' : friend_company,
+			'friend_position' : friend_position,
+			'level' : level,
+			'comment' : comment,
 			}
 		cur.execute(sql, value)
 		cnx.commit()
