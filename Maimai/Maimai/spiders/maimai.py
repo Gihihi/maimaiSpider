@@ -3,6 +3,7 @@ import scrapy
 import re
 import json
 import time
+import random
 from Maimai.items import BaseItem
 from Maimai.items import WorkItem
 from Maimai.items import EduItem
@@ -13,8 +14,25 @@ NONE_STR = lambda x : '' if x == None else x
 WORK_END_DATE = lambda x : '至今' if x == None else x
 
 KEY_WORDS = {
-		'10695' : '小米', 
-		#'10939' : '新浪',
+		'2221' : '陌陌', 
+		'11070' : '豆瓣',
+		'1' : '脉脉',
+		'8877' : '人人网',
+		'10020' : '去哪儿',
+		"""
+		'' : '友盟',
+		'' : '优酷',
+		'' : '爱奇艺',
+		'' : '搜狐',
+		'' : '今日头条',
+		'' : '微软',
+		'' : '滴滴',
+		'' : '雅虎',
+		'' : '亚马逊',
+		'' : 'boss直聘',
+		'' : '领英',
+		'' : '谷歌',
+		"""
 	}
 
 SEX_DICT = {
@@ -38,9 +56,9 @@ class MaimaiSpider(scrapy.Spider):
 	start_urls = ['http://maimai.cn/',]
 
 	#每次获取员工数量
-	count = '1'
+	count = '20'
 	#获取页数
-	page = 1
+	page = 5
 	#请求延迟秒数
 	sleep_time = 1
 
@@ -49,11 +67,24 @@ class MaimaiSpider(scrapy.Spider):
 	cid_url = '&cid='
 	json_url = '&jsononly=1'
 
-	cookies = {
-		'token' : '"nW56bx8KqRtobT9ZpyKoW7LSl23Lelwu2j/yC3Uxmp7E8chkqpLBOKIMDf+fnU578CKuzcDfAvoCmBm7+jVysA=="',
-		'uid' : '"ZEkXyXgSVkAPNZvq3t1D1PAirs3A3wL6ApgZu/o1crA="',
-		}
-
+	cookies = [
+		{
+		'token' : '"YW31A5QzdqA/2gqLzwsJF2mN/v1Pm1EBA6CTbjVSOaC2HV7lLgxi3/5p/ISM3ksS8CKuzcDfAvoCmBm7+jVysA=="',
+		'uid' : '"gXtjb/7cLQaFKXHgExS5F/Airs3A3wL6ApgZu/o1crA="',
+		},
+		{
+		'token' : '"GXvaMdd/ixFIjsdoqqwQNisJ6ER4djs3w/wkQZi3xN0WkUNps4DyfcuHSl5GRlAE8CKuzcDfAvoCmBm7+jVysA=="',
+		'uid' : '"gXtjb/7cLQaFKXHgExS5F/Airs3A3wL6ApgZu/o1crA="',
+		},
+		{
+		'token' : '"BuYc3H9OD8eUd9bHO7VA66+E9RV/tynzw8BI3JIcf8PPGNBmC4uLgPrzkmTZa+CG8CKuzcDfAvoCmBm7+jVysA=="',
+		'uid' : '"gXtjb/7cLQaFKXHgExS5F/Airs3A3wL6ApgZu/o1crA="',
+		},
+		{
+		'token' : '"mtpk7pFVOycugN+7xhlcA0uvuoxYdx8A+9W2JomcyN2klX5HJVQTUBhg6c8bQGKF8CKuzcDfAvoCmBm7+jVysA=="',
+		'uid' : '"gXtjb/7cLQaFKXHgExS5F/Airs3A3wL6ApgZu/o1crA="',
+		},
+			]
 	def start_requests(self):
 		'''
 			查询公司员工
@@ -63,7 +94,7 @@ class MaimaiSpider(scrapy.Spider):
 			while True:
 				url = self.head_url + self.count + self.page_url + str(i) + self.cid_url + cid + self.json_url
 				time.sleep(self.sleep_time)
-				yield scrapy.Request(url, cookies=self.cookies, callback=self.parse)
+				yield scrapy.Request(url, cookies=random.choice(self.cookies), callback=self.parse)
 				i += 1
 				if i == self.page:
 					break
@@ -84,12 +115,12 @@ class MaimaiSpider(scrapy.Spider):
 		for contact in contacts:
 			person_url = start_url + contact['contact']['encode_mmid'] + end_url
 			time.sleep(self.sleep_time)
-			yield scrapy.Request(person_url, cookies=self.cookies, callback=self.get_info)
+			yield scrapy.Request(person_url, cookies=random.choice(self.cookies), callback=self.get_info)
 
 			comment_url = comment_start_url + contact['contact']['encode_mmid'] + comment_end_url
 
 			time.sleep(self.sleep_time)
-			yield scrapy.Request(comment_url, cookies=self.cookies, callback=self.get_comment)
+			yield scrapy.Request(comment_url, cookies=random.choice(self.cookies), callback=self.get_comment)
 
 
 	def get_info(self, response):
@@ -98,7 +129,7 @@ class MaimaiSpider(scrapy.Spider):
 		'''
 		
 		content = response.body
-		print content
+		#print content
 		pattern_staff_info = re.compile('JSON.parse\("(.*?)\);')
 		staff_info = pattern_staff_info.findall(content)[0].replace('\u0022', '"').replace('\u002D', '-')
 
