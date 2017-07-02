@@ -117,27 +117,15 @@ class MaimaiSpider(scrapy.Spider):
 		#工作地
 		item['work_city'] = card['province'] + '-' +  card['city']
 		#性别
-		if sex in SEX_DICT.keys():
-			item['sex'] = SEX_DICT[sex]
-		else:
-			item['sex'] = '不详'
+		item['sex'] = SEX_DICT.get(sex, '不详')
 		#家乡
-		if 'ht_city' in uinfo.keys() and 'ht_province' in uinfo.keys():
-			item['birth_city'] = NONE_STR(uinfo['ht_province']) + '-' + NONE_STR(uinfo['ht_city'])
-			if item['birth_city'] == '-':
-				item['birth_city'] = ''
-		else:
+		item['birth_city'] = NONE_STR(uinfo.get('ht_province', '')) + '-' + NONE_STR(uinfo.get('ht_city', ''))
+		if item['birth_city'] == '-':
 			item['birth_city'] = ''
 		#星座
-		if 'xingzuo' in uinfo.keys():
-			item['xingzuo'] = uinfo['xingzuo']
-		else:
-			item['xingzuo'] = ''
+		item['xingzuo'] = uinfo.get('xingzuo', '')
 		#生日
-		if 'birthday' in uinfo.keys():
-			item['birthday'] = NONE_STR(uinfo['birthday'])
-		else:
-			item['birthday'] = ''
+		item['birthday'] = NONE_STR(uinfo.get('birthday', ''))
 		#标签
 		tag_list = ''
 		for tag in uinfo['weibo_tags']:
@@ -151,10 +139,7 @@ class MaimaiSpider(scrapy.Spider):
 			item['id'] = id
 			item['company'] = work_exp['company']
 			item['position'] = work_exp['position']
-			if 'descroption' in work_exp.keys():
-				item['description'] = work_exp['description']
-			else:
-				item['description'] = ''
+			item['description'] = work_exp.get('description', '')
 			item['start_date'] = work_exp['start_date']
 			item['end_date'] = WORK_END_DATE(work_exp['end_date'])
 			yield item
@@ -164,12 +149,9 @@ class MaimaiSpider(scrapy.Spider):
 			item = EduItem()
 			item['id'] = id
 			item['school'] = edu_exp['school']
-			if 'degree' in edu_exp.keys():
-				item['degree'] = DEGREE_DICT[edu_exp['degree']]
-			else:
-				item['degree'] = '' 
+			item['degree'] = DEGREE_DICT[edu_exp.get('degree', '255')]
 			item['department'] = edu_exp['department']
 			item['start_date'] = edu_exp['start_date']
-			item['end_date'] = edu_exp['start_date']
+			item['end_date'] = edu_exp.get('end_date', '')
 			yield item
 
