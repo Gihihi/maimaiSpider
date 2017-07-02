@@ -13,7 +13,7 @@ WORK_END_DATE = lambda x : '至今' if x == None else x
 
 KEY_WORDS = {
 		'10695' : '小米', 
-		#'10939' : '新浪',
+		'10939' : '新浪',
 	}
 
 SEX_DICT = {
@@ -27,6 +27,7 @@ DEGREE_DICT = {
 		2 : '硕士',
 		3 : '博士',
 		4 : '博士后',
+		5 : '其他',
 		255 : '其他',
 	}
 
@@ -36,11 +37,11 @@ class MaimaiSpider(scrapy.Spider):
 	start_urls = ['http://maimai.cn/',]
 
 	#每次获取员工数量
-	count = '2'
+	count = '20'
 	#获取页数
-	page = 1
+	page = 5
 	#请求延迟秒数
-	sleep_time = 0
+	sleep_time = 1
 
 	head_url = 'https://maimai.cn/company/contacts?count='
 	page_url = '&page='
@@ -105,6 +106,8 @@ class MaimaiSpider(scrapy.Spider):
 		item = BaseItem()
 		#id
 		item['id'] = id
+		#url
+		item['url'] = response.url
 		#姓名
 		item['name'] = card['name']
 		#头像链接
