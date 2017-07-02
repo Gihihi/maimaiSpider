@@ -6,6 +6,7 @@ import time
 from Maimai.items import BaseItem
 from Maimai.items import WorkItem
 from Maimai.items import EduItem
+from Maimai.items import CommentItem
 
 NONE_STR = lambda x : '' if x == None else x
 
@@ -13,7 +14,7 @@ WORK_END_DATE = lambda x : '至今' if x == None else x
 
 KEY_WORDS = {
 		'10695' : '小米', 
-		'10939' : '新浪',
+		#'10939' : '新浪',
 	}
 
 SEX_DICT = {
@@ -37,9 +38,9 @@ class MaimaiSpider(scrapy.Spider):
 	start_urls = ['http://maimai.cn/',]
 
 	#每次获取员工数量
-	count = '20'
+	count = '1'
 	#获取页数
-	page = 5
+	page = 1
 	#请求延迟秒数
 	sleep_time = 1
 
@@ -71,8 +72,13 @@ class MaimaiSpider(scrapy.Spider):
 		'''
 			解析个人员工url
 		'''
+		
 		start_url = 'https://maimai.cn/contact/detail/'
 		end_url = '?from=webview%23%2Fcompany%2Fcontacts'
+
+		comment_start_url = 'https://maimai.cn/contact/comment_list/'
+		comment_end_url = '?jsononly=1'
+
 		content = json.loads(response.body)
 		contacts = content['data']['contacts']
 		for contact in contacts:
@@ -80,13 +86,19 @@ class MaimaiSpider(scrapy.Spider):
 			time.sleep(self.sleep_time)
 			yield scrapy.Request(person_url, cookies=self.cookies, callback=self.get_info)
 
+			comment_url = comment_start_url + contact['contact']['encode_mmid'] + comment_end_url
+
+			time.sleep(self.sleep_time)
+			yield scrapy.Request(comment_url, cookies=self.cookies, callback=self.get_comment)
+
+
 	def get_info(self, response):
 		'''
 			解析员工个人信息
 		'''
-
+		
 		content = response.body
-
+		print content
 		pattern_staff_info = re.compile('JSON.parse\("(.*?)\);')
 		staff_info = pattern_staff_info.findall(content)[0].replace('\u0022', '"').replace('\u002D', '-')
 
@@ -112,8 +124,10 @@ class MaimaiSpider(scrapy.Spider):
 		item['name'] = card['name']
 		#头像链接
 		item['img'] = card['avatar_large']
-		#公司+职位
-		item['description'] = card['company'] + card['position']
+		#公司
+		item['company'] = card['company']
+		#职位
+		item['position'] = card['position']
 		#工作地
 		item['work_city'] = card['province'] + '-' +  card['city']
 		#性别
@@ -153,5 +167,20 @@ class MaimaiSpider(scrapy.Spider):
 			item['department'] = edu_exp['department']
 			item['start_date'] = edu_exp['start_date']
 			item['end_date'] = edu_exp.get('end_date', '')
+			yield item
+
+	def get_comment(self, response):
+		content = json.loads(response.body)
+		comment_list = content['data']['evaluation_list']
+
+		for comment in comment_list:
+			item = CommentItem()
+			item['id'] = comment['user']['id']
+			item['friend_id'] = comment['src_user']['id']
+			item['friend_name'] = comment['src_user']['name']
+			item['friend_company'] = comment['src_user']['company']
+			item['friend_position'] = comment['src_user']['position']
+			item['level'] = comment['re']
+			item['comment'] = comment['text']
 			yield item
 
