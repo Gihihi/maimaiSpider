@@ -14,9 +14,8 @@ NONE_STR = lambda x : '' if x == None else x
 WORK_END_DATE = lambda x : '至今' if x == None else x
 
 KEY_WORDS = {
-		'10695' : '小米'
-		#'2221' : '陌陌',
-		#'11070' : '豆瓣',
+		'2221' : '陌陌',
+		'11070' : '豆瓣',
 		#'1' : '脉脉',
 		#'8877' : '人人网',
 		#'10020' : '去哪儿',
@@ -55,7 +54,7 @@ class MaimaiSpider(scrapy.Spider):
 	start_urls = ['http://maimai.cn/',]
 
 	#每次获取员工数量
-	count = '5'
+	count = '200'
 	#获取页数
 	page = 1
 	#请求延迟秒数
@@ -177,14 +176,12 @@ class MaimaiSpider(scrapy.Spider):
 				yield item
 		except Exception, e:
 			print e
-		
 
 	def get_comment(self, response):
 		try:
 			content = json.loads(response.body)
 			comment_list = content['data']['evaluation_list']
 		except Exception, e:
-			print response.body
 			print e
 
 		for comment in comment_list:
