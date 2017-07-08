@@ -4,15 +4,16 @@ import json
 import MySQLdb
 from Maimai.items import SimpleItem
 from keywords import KEYWORDS
+from Maimai.settings import MYSQL_CONFIG
 
 #数据库配置
-MYSQL_HOSTS = 'localhost'
-MYSQL_USER = 'maimai'
-MYSQL_PASSWORD = 'maimai'
-MYSQL_PORT = 3306
-MYSQL_DB = 'maimai'
+MYSQL_HOST = MYSQL_CONFIG['MYSQL_HOST']
+MYSQL_USER = MYSQL_CONFIG['MYSQL_USER']
+MYSQL_PASSWD = MYSQL_CONFIG['MYSQL_PASSWD']
+MYSQL_PORT = MYSQL_CONFIG['MYSQL_PORT']
+MYSQL_DB = MYSQL_CONFIG['MYSQL_DB']
 
-cnx = MySQLdb.connect(user=MYSQL_USER, passwd=MYSQL_PASSWORD, host=MYSQL_HOSTS, db=MYSQL_DB, port=MYSQL_PORT, charset='utf8')
+cnx = MySQLdb.connect(user=MYSQL_USER, passwd=MYSQL_PASSWD, host=MYSQL_HOST, db=MYSQL_DB, port=MYSQL_PORT, charset='utf8')
 cur = cnx.cursor()
 
 #根据关键字删除数据
