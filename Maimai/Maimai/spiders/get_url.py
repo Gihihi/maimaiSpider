@@ -3,6 +3,7 @@ import scrapy
 import json
 import MySQLdb
 from Maimai.items import SimpleItem
+from keywords import KEYWORDS
 
 #数据库配置
 MYSQL_HOSTS = 'localhost'
@@ -11,33 +12,12 @@ MYSQL_PASSWORD = 'maimai'
 MYSQL_PORT = 3306
 MYSQL_DB = 'maimai'
 
-KEY_WORDS = [
-		'陌陌',
-		#'豆瓣',
-		#'脉脉',
-		#'人人网',
-		#'去哪儿',
-		#'友盟',
-		#'优酷',
-		#'爱奇艺',
-		#'搜狐',
-		#'今日头条',
-		#'微软',
-		#'滴滴',
-		#'雅虎',
-		#'亚马逊',
-		#'boss直聘',
-		#'领英',
-		#'谷歌',
-		
-	]
-
 cnx = MySQLdb.connect(user=MYSQL_USER, passwd=MYSQL_PASSWORD, host=MYSQL_HOSTS, db=MYSQL_DB, port=MYSQL_PORT, charset='utf8')
 cur = cnx.cursor()
 
 #根据关键字删除数据
 sql = 'delete from simpleitem where cid in '
-cid_list = "('" + "','".join(KEY_WORDS) + "')"
+cid_list = "('" + "','".join(KEYWORDS) + "')"
 delete_sql = sql + cid_list
 cur.execute(delete_sql)
 cnx.commit()
@@ -59,7 +39,7 @@ class GetUrlSpider(scrapy.Spider):
 		'''
 			搜索关键字
 		'''
-		for query in KEY_WORDS:
+		for query in KEYWORDS:
 			url =  'https://maimai.cn/search/contacts?count=20000&query=' + query +  self.json_url
 			yield scrapy.Request(url, cookies=self.cookies, callback=self.parse, meta={'query' : query})
 	
