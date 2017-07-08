@@ -63,7 +63,7 @@ class Sql:
 
 	@classmethod
 	def insert_commentitem(self, id, friend_id, friend_name, friend_company, friend_position, level, comment):
-		sql = 'INSERT INTO commentitem (ID, FRIEND_ID, FRIEND_NAME, FRIEND_COMPANY, FIREND_POSITION, LEVEL, COMMENT) VALUES (%(id)s, %(friend_id)s, %(friend_name)s, %(friend_company)s, %(firend_position)s, %(level)s, %(comment)s)'
+		sql = 'INSERT INTO commentitem (ID, FRIEND_ID, FRIEND_NAME, FRIEND_COMPANY, FRIEND_POSITION, LEVEL, COMMENT) VALUES (%(id)s, %(friend_id)s, %(friend_name)s, %(friend_company)s, %(friend_position)s, %(level)s, %(comment)s)'
 		value = {
 			'id' : id,
 			'friend_id' : friend_id,
@@ -72,6 +72,22 @@ class Sql:
 			'friend_position' : friend_position,
 			'level' : level,
 			'comment' : comment,
+			}
+		cur.execute(sql, value)
+		cnx.commit()
+	
+	@classmethod
+	def insert_simpleitem(self, id, cid, name, loc, company, position, encode_mmid, url):
+		sql = 'insert into simpleitem (id, cid, name, loc, company, position, encode_mmid, url) values (%(id)s, %(cid)s, %(name)s, %(loc)s, %(company)s, %(position)s, %(encode_mmid)s, %(url)s)'
+		value = {
+			'id' : id,
+			'cid' : cid,
+			'name' : name,
+			'loc' : loc,
+			'company' : company,
+			'position' : position,
+			'encode_mmid' : encode_mmid,
+			'url' : url,
 			}
 		cur.execute(sql, value)
 		cnx.commit()

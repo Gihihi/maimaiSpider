@@ -6,6 +6,7 @@ from Maimai.items import BaseItem
 from Maimai.items import WorkItem
 from Maimai.items import EduItem
 from Maimai.items import CommentItem
+from Maimai.items import SimpleItem
 
 class MaimaiPipeline(object):
 	
@@ -51,4 +52,18 @@ class MaimaiPipeline(object):
 			friend_position = item['friend_position']
 			level = item['level']
 			comment = item['comment']
-			Sql.insert_eduitem(id, friend_id, friend_name, friend_company, friend_position, level, comment)
+			try:
+				Sql.insert_commentitem(id, friend_id, friend_name, friend_company, friend_position, level, comment)
+			except:
+				pass
+		if isinstance(item, SimpleItem):
+			id = item['id']
+			cid = item['cid']
+			name = item['name']
+			loc = item['loc']
+			company = item['company']
+			position = item['position']
+			encode_mmid = item['encode_mmid']
+			url = item['url']
+			Sql.insert_simpleitem(id, cid, name, loc, company, position, encode_mmid, url)
+

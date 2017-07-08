@@ -8,9 +8,39 @@
 import random
 import base64
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
-from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
 from useragent import USER_AGENTS
-#from ip import IP_POOL
+from useragent import MOBILE_USER_AGENTS
+
+class Http_code_400(object):
+	def process_response(self, request, response, spider):
+		if response.status == 400:
+			return request
+		return response
+	
+
+class ProxyMiddleWare(object):
+	def process_request(self, request, spider):
+		proxy = self.get_random_proxy()
+		print ('this is request ip:' + proxy)
+		request.meta['proxy'] = proxy
+	
+	def process_response(self, request, response, spider):
+		if response.status != 200:
+			proxy = self.get_random_proxy()
+			print ('this is request ip:' + proxy)
+			request.meta['proxy'] = proxy
+			return request
+		return response
+
+	def get_random_proxy(self):
+		while True:
+			with open('/home/python/GitHub/maimaiSpider/Maimai/Maimai/proxies.txt', 'r') as f:
+				proxies = f.readlines()
+			if proxies:
+				break
+		proxy = random.choice(proxies).strip()
+		return proxy
+
 
 class UAPOOLS(UserAgentMiddleware):
 	
@@ -24,32 +54,12 @@ class UAPOOLS(UserAgentMiddleware):
 		'''
 			使用代理UA，随机选用
 		'''
+		#手机
+		#ua = random.choice(MOBILE_USER_AGENTS)
+		#网页
 		ua = random.choice(USER_AGENTS)
 
 		try:
 			request.headers.setdefault('User-Agent', ua)
 		except Exception, e:
 			print e
-
-class IPPOOLS(HttpProxyMiddleware):
-	
-	def __init__(self, ip = ''):
-		'''
-			初始化
-		'''
-		self.ip = ip
-
-	def process_request(self, request, spider):
-		'''
-			使用代理ip，随机选用
-		'''
-		ip = random.choice(self.ip_pool)#IP_POOL
-
-		try:
-			request.meta['proxy'] = 'https://' + ip['ip']
-		except Exception, e:
-			print e
-
-	ip_pool = [
-		{'ip' : '119.75.216.20'},
-		]

@@ -16,7 +16,7 @@ NEWSPIDER_MODULE = 'Maimai.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'Maimai (+http://www.yourdomain.com)'
+#USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Mobile/14F89/{iPhone9,2} [iOS 10.3.2]/MaiMai 4.16.36(4.16.36)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -33,16 +33,19 @@ DOWNLOAD_DELAY = 3
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = True
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+DEFAULT_REQUEST_HEADERS = {
+	'Accept': '*/*',
+	'Aceept-Encoding' : 'gzip,deflate',
+	'Accept-Language': 'zh-cn',
+	'Host' : 'maimai.cn',
+	'Connection' : 'keep-alive',
+}
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
@@ -53,11 +56,12 @@ DOWNLOAD_DELAY = 3
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    #'Maimai.middlewares.MyCustomDownloaderMiddleware': 543,
+	#'Maimai.middlewares.ProxyMiddleWare' : 127, 
+	#'Maimai.middlewares.Http_code_400' : 127, 
 	'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware' : 123,
 	'Maimai.middlewares.UAPOOLS' : 124,
-	'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware' : 125,
-	'Maimai.middlewares.IPPOOLS' : 126,
+#	'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware' : 125,
+	#'Maimai.middlewares.IPPOOLS' : 126,
 }
 
 # Enable or disable extensions
@@ -94,9 +98,10 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+REDIRECT_ENABLED = False
+
 MYSQL_HOSTS = '127.0.0.1'
 MYSQL_USER = 'maimai'
 MYSQL_PASSWORD = 'maimai'
 MYSQL_PORT = '3306'
 MYSQL_DB = 'maimai'
-
