@@ -8,6 +8,7 @@ from Maimai.items import WorkItem
 from Maimai.items import EduItem
 from Maimai.items import CommentItem
 from Maimai.settings import MYSQL_CONFIG
+from cookie import my_cookies_mob
 
 MYSQL_HOST = MYSQL_CONFIG['MYSQL_HOST']
 MYSQL_USER = MYSQL_CONFIG['MYSQL_USER']
@@ -58,37 +59,6 @@ class MaimaiSpider(scrapy.Spider):
 	cid_url = '&cid='
 	json_url = '&jsononly=1'
 	
-	#淘宝用户cookie
-	other_cookies = {
-		'token' : 'rR+0sYDAG7n4eTd50dDOoG8UZ5EGUWQao1D88xnXRC87egJdXL/riMlMlHuQj+gM8CKuzcDfAvoCmBm7+jVysA=="',
-		'uid' : '"arurl0Eq1zCBSULJBihAPPAirs3A3wL6ApgZu/o1crA="',
-		}
-
-	#我自己的Cookie
-	my_cookies = [
-		{
-		'token' : '"JCaXZWgfZOSH7HerBGI8mZCYBUl6BUEXQ+yKKBzwb1ovLy2Lo30GuJ2zjUZ65Mfi8CKuzcDfAvoCmBm7+jVysA=="',
-		'uid' : '"ZEkXyXgSVkAPNZvq3t1D1PAirs3A3wL6ApgZu/o1crA="',
-		},
-		{
-		'token' : '"WRWyESvGsjgEusRJBcHCTouRjn27eTa62SabOkD7i6SCEEhIJYD6RqyMqIvygYJJ8CKuzcDfAvoCmBm7+jVysA=="',
-		'uid' : '"ZEkXyXgSVkAPNZvq3t1D1PAirs3A3wL6ApgZu/o1crA="',
-		},
-		{
-		'token' : '"CtH+IyzvVbolRx12RwMKYfQbfFHgXoGO1jLk1EAQXM3LztWZqFyaPoTcGFFy7HoU8CKuzcDfAvoCmBm7+jVysA=="',
-		'uid' : '"ZEkXyXgSVkAPNZvq3t1D1PAirs3A3wL6ApgZu/o1crA="',
-		}
-		]
-
-	#手机cookie
-	my_mobile_cookies = {
-		#"access_token" : "1.1b5a9b6485fea1532d7f9712c41aad16",
-		#"channel" : "AppStore",
-		#"version" : "4.16.36",
-		"u" : "38076353",
-		"koa:sess" : "eyJ1IjoiMzgwNzYzNTMiLCJzZWNyZXQiOiJfNjZLUnBhVVRCLVpteVJlNVhXWWIycmoiLCJfZXhwaXJlIjoxNDk5NTg2Mzk4NzQ0LCJfbWF4QWdlIjo4NjQwMDAwMH0=",
-		"koa:sess.sig" : "G6LsEpQR7SArV1rSEo2JLpgm3t0",
-			}
 
 	def start_requests(self):
 		'''
@@ -112,8 +82,9 @@ class MaimaiSpider(scrapy.Spider):
 		for row in rows:
 			person_url = start_url + row[0] + end_url
 			referer = start_url + row[0] + referer_end_url
+			
 			#使用不同cookie，模拟手机或网页请求
-			yield scrapy.Request(person_url, cookies=self.my_mobile_cookies, callback=self.get_info, headers={'Referer':referer})
+			yield scrapy.Request(person_url, cookies=my_cookies_mob, callback=self.get_info, headers={'Referer':referer})
 
 		
 	def parse(self, response):
