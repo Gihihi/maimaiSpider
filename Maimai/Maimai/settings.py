@@ -95,3 +95,11 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 REDIRECT_ENABLED = False
+
+MYSQL_CONFIG = {
+	'MYSQL_HOST' : 'localhost',
+	'MYSQL_USER' : 'maimai',
+	'MYSQL_PASSWD' : 'maimai',
+	'MYSQL_PORT' : 3306,
+	'MYSQL_DB' : 'maimai',
+	}
