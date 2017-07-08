@@ -8,5 +8,5 @@ PROXIES = [
 	{'ip_port' : '182.84.227.96:65000', 'user_passwd' : 'user56:xRhCzPeGxI'},
 	{'ip_port' : '115.148.246.37:65000', 'user_passwd' : 'user57:tYiFdHwJmQ'},
 	{'ip_port' : '115.148.236.23:65000', 'user_passwd' : 'user58:oDbFcQhWjY'},
-	{'ip_port' : '182.85.204.126', 'user_passwd' : '65000:user59:mHwIkTqQvU'},
+	{'ip_port' : '182.85.204.126:65000', 'user_passwd' : 'user59:mHwIkTqQvU'},
 	]
