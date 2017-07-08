@@ -9,7 +9,6 @@ import random
 import base64
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 from useragent import USER_AGENTS
-from useragent import MOBILE_USER_AGENTS
 
 class Http_code_400(object):
 	def process_response(self, request, response, spider):
@@ -54,9 +53,6 @@ class UAPOOLS(UserAgentMiddleware):
 		'''
 			使用代理UA，随机选用
 		'''
-		#手机
-		#ua = random.choice(MOBILE_USER_AGENTS)
-		#网页
 		ua = random.choice(USER_AGENTS)
 
 		try:
