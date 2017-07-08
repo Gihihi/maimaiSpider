@@ -7,7 +7,6 @@ from Maimai.items import BaseItem
 from Maimai.items import WorkItem
 from Maimai.items import EduItem
 from Maimai.items import CommentItem
-from Maimai.items import SimpleItem
 
 MYSQL_HOSTS = 'localhost'
 MYSQL_USER = 'maimai'
@@ -32,26 +31,6 @@ cur.close
 NONE_STR = lambda x : '' if x == None else x
 
 WORK_END_DATE = lambda x : '至今' if x == None else x
-
-KEY_WORDS = {
-		'2221' : '陌陌',
-		'11070' : '豆瓣',
-		'1' : '脉脉',
-		'8877' : '人人网',
-		'10020' : '去哪儿',
-		'27394' : '友盟',
-		'10041' : '优酷',
-		'8220' : '爱奇艺',
-		'10989' : '搜狐',
-		'10993' : '今日头条',
-		'8538' : '微软',
-		'9859' : '滴滴',
-		'12207' : '雅虎',
-		'10860' : '亚马逊',
-		'24030' : 'boss直聘',
-		'11973' : '领英',
-		'16017' : '谷歌',
-	}
 
 SEX_DICT = {
 		u'他' : '男',
@@ -78,11 +57,13 @@ class MaimaiSpider(scrapy.Spider):
 	cid_url = '&cid='
 	json_url = '&jsononly=1'
 	
+	#淘宝用户cookie
 	other_cookies = {
 		'token' : 'rR+0sYDAG7n4eTd50dDOoG8UZ5EGUWQao1D88xnXRC87egJdXL/riMlMlHuQj+gM8CKuzcDfAvoCmBm7+jVysA=="',
 		'uid' : '"arurl0Eq1zCBSULJBihAPPAirs3A3wL6ApgZu/o1crA="',
 		}
 
+	#我自己的Cookie
 	my_cookies = [
 		{
 		'token' : '"JCaXZWgfZOSH7HerBGI8mZCYBUl6BUEXQ+yKKBzwb1ovLy2Lo30GuJ2zjUZ65Mfi8CKuzcDfAvoCmBm7+jVysA=="',
@@ -98,6 +79,7 @@ class MaimaiSpider(scrapy.Spider):
 		}
 		]
 
+	#手机cookie
 	my_mobile_cookies = {
 		#"access_token" : "1.1b5a9b6485fea1532d7f9712c41aad16",
 		#"channel" : "AppStore",
@@ -111,17 +93,6 @@ class MaimaiSpider(scrapy.Spider):
 		'''
 			从待爬池中获取个人url
 		'''
-		#for cid in KEY_WORDS.keys():
-		#	i = 0
-		#	while True:
-		#		url = self.head_url + self.count + self.page_url + str(i) + self.cid_url + cid + self.json_url
-		#		yield scrapy.Request(url, cookies=self.cookies, callback=self.parse, meta={'cid' : cid})
-		#		i += 1
-		#		if i == self.page:
-		#			break
-		#for query in KEY_WORDS.values():
-		#	url =  'https://maimai.cn/search/contacts?count=20000&query=' + query +  self.json_url
-		#	yield scrapy.Request(url, cookies=self.cookies, callback=self.parse, meta={'query' : query})
 		referer_end_url = '?from=webview#/company/contacts'
 		
 		start_url = 'https://maimai.cn/contact/detail/'
@@ -130,71 +101,22 @@ class MaimaiSpider(scrapy.Spider):
 		comment_start_url = 'https://maimai.cn/contact/comment_list/'
 		comment_end_url = '/?jsononly=1'
 		
+		#评价
 		for row in rows:
 			comment_url = comment_start_url + row[0] + comment_end_url
 			referer = start_url + row[0] + referer_end_url
 			yield scrapy.Request(comment_url, callback=self.get_comment, headers={'Referer':referer})
 
+		#个人信息
 		for row in rows:
 			person_url = start_url + row[0] + end_url
 			referer = start_url + row[0] + referer_end_url
 			#使用不同cookie，模拟手机或网页请求
 			yield scrapy.Request(person_url, cookies=self.my_mobile_cookies, callback=self.get_info, headers={'Referer':referer})
 
-
-	def parse3(self, response):
-
-		content = json.loads(response.body)
-		contacts = content['data']['contacts']
-		for contact in contacts:
-			item = SimpleItem()
-			item['loc'] = contact['contact']['loc']
-			item['company'] = contact['contact']['company']
-			item['name'] = contact['contact']['name']
-			item['position'] = contact['contact']['position']
-			item['id'] = contact['contact']['id']
-			item['cid'] = response.meta['query']
-			item['encode_mmid'] = contact['contact']['encode_mmid']
-			item['url'] = 'https://maimai.cn/contact/detail/' +  contact['contact']['encode_mmid'] + '?from=webview%23%2Fcompany%2Fcontacts'
-			yield item
 		
-	def parse2(self, response):
-		
-		content = json.loads(response.body)
-		contacts = content['data']['contacts']
-		for contact in contacts:
-			item = SimpleItem()
-			item['loc'] = contact['contact']['loc']
-			item['company'] = contact['contact']['company']
-			item['name'] = contact['contact']['name']
-			item['position'] = contact['contact']['position']
-			item['id'] = contact['contact']['id']
-			item['cid'] = response.meta['cid']
-			item['encode_mmid'] = contact['contact']['encode_mmid']
-			item['url'] = 'https://maimai.cn/contact/detail/' +  contact['contact']['encode_mmid'] + '?from=webview%23%2Fcompany%2Fcontacts'
-			yield item
-
 	def parse(self, response):
-		'''
-			解析个人员工url
-		'''
-		
-		start_url = 'https://maimai.cn/contact/detail/'
-		end_url = '?from=webview%23%2Fcompany%2Fcontacts&jsononly=1'
-
-		comment_start_url = 'https://maimai.cn/contact/comment_list/'
-		comment_end_url = '?jsononly=1'
-
-		content = json.loads(response.body)
-		contacts = content['data']['contacts']
-		#for contact in contacts:
-		#	person_url = start_url + contact['contact']['encode_mmid'] + end_url
-		#	yield scrapy.Request(person_url, cookies=self.cookies, callback=self.get_info)
-
-		#	comment_url = comment_start_url + contact['contact']['encode_mmid'] + comment_end_url
-
-		#	yield scrapy.Request(comment_url, callback=self.get_comment)
-
+		pass
 
 	def get_info(self, response):
 		'''
