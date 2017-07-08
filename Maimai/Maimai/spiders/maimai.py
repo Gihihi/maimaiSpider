@@ -8,7 +8,7 @@ from Maimai.items import WorkItem
 from Maimai.items import EduItem
 from Maimai.items import CommentItem
 from Maimai.settings import MYSQL_CONFIG
-from cookie import my_cookies_mob
+from cookie import other_cookies_mob
 
 MYSQL_HOST = MYSQL_CONFIG['MYSQL_HOST']
 MYSQL_USER = MYSQL_CONFIG['MYSQL_USER']
@@ -24,12 +24,12 @@ cur.execute('select encode_mmid from simpleitem_search where id not in (select i
 
 #指定本次爬去数量
 #rows = cur.fetchall()
-rows = cur.fetchmany(1)
+rows = cur.fetchmany(10)
 
 cur.close
 
 #COOKIE
-COOKIES = my_cookies_mob
+COOKIES = other_cookies_mob
 
 NONE_STR = lambda x : '' if x == None else x
 
