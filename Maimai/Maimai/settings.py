@@ -56,12 +56,8 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-	#'Maimai.middlewares.ProxyMiddleWare' : 127, 
-	#'Maimai.middlewares.Http_code_400' : 127, 
-	'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware' : 123,
-	'Maimai.middlewares.UAPOOLS' : 124,
-#	'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware' : 125,
-	#'Maimai.middlewares.IPPOOLS' : 126,
+	'Maimai.middlewares.IPPOOLS' : 1, 
+	'Maimai.middlewares.UAPOOLS' : 2,
 }
 
 # Enable or disable extensions
@@ -99,9 +95,3 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 REDIRECT_ENABLED = False
-
-MYSQL_HOSTS = '127.0.0.1'
-MYSQL_USER = 'maimai'
-MYSQL_PASSWORD = 'maimai'
-MYSQL_PORT = '3306'
-MYSQL_DB = 'maimai'

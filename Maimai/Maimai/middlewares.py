@@ -7,55 +7,26 @@
 
 import random
 import base64
-from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 from useragent import USER_AGENTS
+from proxy import PROXIES
 
-class Http_code_400(object):
-	def process_response(self, request, response, spider):
-		if response.status == 400:
-			return request
-		return response
+class IPPOOLS(object):
 	
-
-class ProxyMiddleWare(object):
 	def process_request(self, request, spider):
-		proxy = self.get_random_proxy()
-		print ('this is request ip:' + proxy)
-		request.meta['proxy'] = proxy
+		
+		proxy = random.choice(PROXIES)
+		
+		#对账户密码进行base64编码转换
+		base64_userpasswd = base64.b64encode(proxy['user_passwd'])
+		
+		#对应到代理服务器的信令格式里
+		request.headers['Proxy-Authorization'] = 'Basic ' + base64_userpasswd
+		request.meta['proxy'] = 'http://' + proxy['ip_port']
+
+class UAPOOLS(object):
 	
-	def process_response(self, request, response, spider):
-		if response.status != 200:
-			proxy = self.get_random_proxy()
-			print ('this is request ip:' + proxy)
-			request.meta['proxy'] = proxy
-			return request
-		return response
-
-	def get_random_proxy(self):
-		while True:
-			with open('/home/python/GitHub/maimaiSpider/Maimai/Maimai/proxies.txt', 'r') as f:
-				proxies = f.readlines()
-			if proxies:
-				break
-		proxy = random.choice(proxies).strip()
-		return proxy
-
-
-class UAPOOLS(UserAgentMiddleware):
-	
-	def __init__(self, user_agent = ''):
-		'''
-			初始化
-		'''
-		self.user_agent = user_agent
-
 	def process_request(self, request, spider):
-		'''
-			使用代理UA，随机选用
-		'''
+		
 		ua = random.choice(USER_AGENTS)
 
-		try:
-			request.headers.setdefault('User-Agent', ua)
-		except Exception, e:
-			print e
+		request.headers.setdefault('User-Agent', ua)
