@@ -133,7 +133,7 @@ class MaimaiSpider(scrapy.Spider):
 			#生日
 			item['birthday'] = NONE_STR(uinfo.get('birthday', ''))
 			#标签
-			item['tag'] = ','.join(uinfo['weibo_tags'])
+			item['tag'] = ','.join(uinfo['skills'])
 			yield item	
 	
 			#工作经历
