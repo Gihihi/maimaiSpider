@@ -28,7 +28,8 @@ rows = cur.fetchmany(1)
 
 cur.close
 
-
+#COOKIE
+COOKIES = my_cookies_mob
 
 NONE_STR = lambda x : '' if x == None else x
 
@@ -84,7 +85,7 @@ class MaimaiSpider(scrapy.Spider):
 			referer = start_url + row[0] + referer_end_url
 			
 			#使用不同cookie，模拟手机或网页请求
-			yield scrapy.Request(person_url, cookies=my_cookies_mob, callback=self.get_info, headers={'Referer':referer})
+			yield scrapy.Request(person_url, cookies=random.choice(COOKIES), callback=self.get_info, headers={'Referer':referer})
 
 		
 	def parse(self, response):
