@@ -24,7 +24,7 @@ cur.execute('select encode_mmid from simpleitem_search where id not in (select i
 
 #指定本次爬去数量
 #rows = cur.fetchall()
-rows = cur.fetchmany(300)
+rows = cur.fetchmany(30)
 
 cur.close
 
@@ -73,13 +73,6 @@ class MaimaiSpider(scrapy.Spider):
 		comment_start_url = 'https://maimai.cn/contact/comment_list/'
 		comment_end_url = '/?jsononly=1'
 		
-		#评价
-		#for row in rows:
-		#	comment_url = comment_start_url + row[0] + comment_end_url
-		#	referer = start_url + row[0] + referer_end_url
-		#	yield scrapy.Request(comment_url, callback=self.get_comment, headers={'Referer':referer})
-
-		#个人信息
 		for row in rows:
 			referer = start_url + row[0] + referer_end_url
 			
