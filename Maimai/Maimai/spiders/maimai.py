@@ -20,11 +20,11 @@ cnx = MySQLdb.connect(user=MYSQL_USER, passwd=MYSQL_PASSWD, host=MYSQL_HOST, db=
 cur = cnx.cursor()
 
 #待爬池获取个人信息
-cur.execute('select encode_mmid from simpleitem_search where id not in (select id from baseitem)')
+cur.execute('select distinct encode_mmid from simpleitem_search where id not in (select id from baseitem)')
 
 #指定本次爬去数量
 #rows = cur.fetchall()
-rows = cur.fetchmany(30)
+rows = cur.fetchmany(1)
 
 cur.close
 
