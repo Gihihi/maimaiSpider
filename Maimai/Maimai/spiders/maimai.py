@@ -24,7 +24,8 @@ cur.execute('select distinct encode_mmid from simpleitem_search where id not in 
 
 #指定本次爬去数量
 #rows = cur.fetchall()
-rows = cur.fetchmany(1)
+rows = cur.fetchmany(10000)
+#rows = cur.fetchmany(10)
 
 cur.close
 
@@ -81,9 +82,10 @@ class MaimaiSpider(scrapy.Spider):
 			yield scrapy.Request(comment_url, callback=self.get_comment, headers={'Referer':referer})
 			
 			#个人信息
-			person_url = start_url + row[0] + end_url
+			person_url = start_url + row[0]  + end_url
 			#使用不同cookie，模拟手机或网页请求
-			yield scrapy.Request(person_url, cookies=random.choice(COOKIES), callback=self.get_info, headers={'Referer':referer})
+			cookies = random.choice(COOKIES)
+			yield scrapy.Request(person_url, cookies=cookies, callback=self.get_info, headers={'Referer':referer})
 
 		
 	def parse(self, response):
